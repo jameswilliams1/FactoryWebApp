@@ -1,7 +1,7 @@
 # Factory Web App
 
 ## Installation
-Create a [virtualenvironment](https://virtualenv.pypa.io/en/latest/) using Python 3 for the app. We recommend using 
+Create a [virtualenvironment](https://virtualenv.pypa.io/en/latest/) using Python 3 for the app. We recommend using
 [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/):
 ```bash
 mkvirtualenv flask-skeleton
@@ -15,7 +15,7 @@ The Flask app can be run by doing:
 ```bash
 FLASK_APP=app.py flask run
 ```
-, or to run in debug mode:
+or to run in debug mode:
 ```bash
 python app.py
 ```

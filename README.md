@@ -24,7 +24,7 @@ The database can be viewed by sending a **GET** request with the '**X-API-KEY**'
 Requests with any other/no headers will return a BAD_REQUEST (400) response. Food products can be added by sending a **POST** request with the 'food' headers containing a JSON of the product in the form:  
 
 
-```json
+```
 {
   "name": "<name>",
   "family": "<family>",
@@ -41,11 +41,11 @@ Requests with any other/no headers will return a BAD_REQUEST (400) response. Foo
   "customer": "<customer>",
   "billOfMaterials": {
     "<material1>": {
-      "quantity": 1,
+      "quantity": <quantity>,
       "units": "<units>"
     },
     "<material2>": {
-      "quantity": 1,
+      "quantity": <quantity>,
       "units": "<units>"
     },
     ...
@@ -57,7 +57,7 @@ Requests with any other/no headers will return a BAD_REQUEST (400) response. Foo
 And textile products are added in a similar way using the 'textile' headers:  
 
 
-```json
+```
 {
   "name": "<name>",
   "colour": "<colour>",

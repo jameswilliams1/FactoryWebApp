@@ -23,17 +23,20 @@ python app.py
 The database can be viewed by sending a **GET** request with the '**X-API-KEY**' header set to either 'food' or 'textile' to retrieve the corresponding products.
 Requests with any other/no headers will return a BAD_REQUEST (400) response. Food products can be added by sending a **POST** request with the 'food' headers containing a JSON of the product in the form:  
 
+
 ```json
 {
   "name": "<name>",
   "family": "<family>",
   "tags": [
     "<tag1>",
-    "<tag2>"
+    "<tag2>",
+    ...
   ],
   "allergens": [
     "<allergen1>",
     "<allergen2>",
+    ...
   ],
   "customer": "<customer>",
   "billOfMaterials": {
@@ -45,11 +48,16 @@ Requests with any other/no headers will return a BAD_REQUEST (400) response. Foo
       "quantity": 1,
       "units": "<units>"
     },
+    ...
   }
 }
 ```  
-And textile products are added in a similar way using the 'textile' headers:
-```
+
+
+And textile products are added in a similar way using the 'textile' headers:  
+
+
+```json
 {
   "name": "<name>",
   "colour": "<colour>",
@@ -71,4 +79,4 @@ And textile products are added in a similar way using the 'textile' headers:
     ...
   }
 }
-```
+```  

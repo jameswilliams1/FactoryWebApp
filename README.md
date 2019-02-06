@@ -20,10 +20,8 @@ or to run in debug mode:
 python app.py
 ```
 ## Usage
-The database can be viewed by sending a **GET** request with the '**X-API-KEY**' header set to either 'food' or 'textile' to retrieve the corresponding products.
+The database can be viewed by sending a **GET** request with the '**X-API-KEY**' header set to either 'food' or 'textile' to the API endpoint '/products', which retrieves the corresponding products.
 Requests with any other/no headers will return a BAD_REQUEST (400) response. Food products can be added by sending a **POST** request with the 'food' headers containing a JSON of the product in the form:  
-
-
 ```
 {
   "name": "<name>",
@@ -52,11 +50,7 @@ Requests with any other/no headers will return a BAD_REQUEST (400) response. Foo
   }
 }
 ```  
-
-
 And textile products are added in a similar way using the 'textile' headers:  
-
-
 ```
 {
   "name": "<name>",
@@ -80,3 +74,4 @@ And textile products are added in a similar way using the 'textile' headers:
   }
 }
 ```  
+Where all "quantity" fields must be integers.  

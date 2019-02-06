@@ -20,25 +20,27 @@ class Product(db.Model): # Contains all product types
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
     product_type = db.Column(db.String(100))
-    def to_json(self):
-        output_json = {}
+    def to_json(self): # Performs SQL queries on appropriate tables and generates API JSON output
         tag_ids = [r[0] for r in ProductTag.query.with_entities(ProductTag.tag_id).filter_by(product_id=self.id).all()]
         tags = [r[0] for r in Tag.query.with_entities(Tag.tag_name).filter(Tag.id.in_(tag_ids))]
         materials = {r[0]: {"quantity": r[1], "units": r[2]} for r in Material.query.with_entities(Material.material_name, Material.quantity, Material.units).filter_by(product_id=self.id).all()}
+        output_json = {
+            "id": self.id,
+            "name": self.name,
+            "tags": tags,
+            "billOfMaterials": materials
+        }
         if self.product_type == 'food':
             allergen_ids = [r[0] for r in ProductAllergen.query.with_entities(ProductAllergen.allergen_id).filter_by(product_id=self.id).all()]
             allergens = [r[0] for r in Allergen.query.with_entities(Allergen.name).filter(Allergen.id.in_(allergen_ids))]
-            return {
-                'id': self.id,
-                'name': self.name,
+            food_details = {
                 'family': Food.query.with_entities(Food.family).filter_by(product_id=self.id).first()[0],
-                'tags': tags,
                 'allergens': allergens,
                 'customer': Food.query.with_entities(Food.customer).filter_by(product_id=self.id).first()[0],
-                'billOfMaterials': materials
                 }
+            output_json = {**output_json, **food_details}
         elif self.product_type == 'textile':
-            textile_details = Textile.query.filter_by(product_id=self.id).first()[0].to_json()
+            textile_details = Textile.query.filter_by(product_id=self.id).first().to_json()
             output_json = {**output_json, **textile_details}
         return output_json
 
@@ -105,18 +107,16 @@ def home_page(): # Renders README.md as HTML, fallback to a title if no file pre
 
 class Products(Resource):
     def get(self):
-        api_key = ''
         try:
             api_key = request.headers['X-API-KEY']
         except KeyError:
-            #return 'No X-API-KEY supplied', HTTPStatus.BAD_REQUEST
-            query = Product.query.filter_by(product_type='food').all()
-            return [q.to_json() for q in query]
+            return 'No X-API-KEY supplied', HTTPStatus.BAD_REQUEST
         if api_key == 'food':
             query = Product.query.filter_by(product_type='food').all()
             return [q.to_json() for q in query]
         elif api_key == 'textile':
-            pass
+            query = Product.query.filter_by(product_type='textile').all()
+            return [q.to_json() for q in query]
         else:
             return 'X-API-KEY not recognised', HTTPStatus.BAD_REQUEST
 
@@ -124,11 +124,40 @@ class Products(Resource):
         api_key = ''
         try:
             api_key = request.headers['X-API-KEY']
+            if api_key != 'food' and api_key != 'textile':
+                return 'X-API-KEY not recognised', HTTPStatus.BAD_REQUEST
         except KeyError:
             return 'No X-API-KEY supplied', HTTPStatus.BAD_REQUEST
         json_data = request.get_json()
         if json_data is None:
             return 'No JSON body supplied', HTTPStatus.BAD_REQUEST
+        try:
+            product = Product(name=json_data["name"], product_type=api_key)
+            db.session.add(Product)
+            db.session.flush()
+            product_id = product.id
+            materials = json_data["billOfMaterials"]
+            #tags = json_data["tags"]
+            if api_key == 'food':
+                family = json_data["family"]
+                customer = json_data["customer"]
+                food_entry = Food(product_id=product_id, family=family, customer=customer)
+                db.session.add(food_entry)
+                try:
+                    allergens = json_data["allergens"]
+
+                except KeyError: # If no allergens provided skip adding
+                    pass
+                db.session.commit()
+            elif api_key == 'textile':
+                colour = json_data["colour"]
+                product_range = json_data["range"]
+
+        except KeyError:
+            return 'Invalid JSON body supplied', HTTPStatus.BAD_REQUEST
+
+
+
 
         return 'Product created', HTTPStatus.CREATED
 

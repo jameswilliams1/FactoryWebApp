@@ -27,16 +27,17 @@ class Product(db.Model): # Contains all product types
         tag_ids = [r[0] for r in ProductTag.query.with_entities(ProductTag.tag_id).filter_by(product_id=self.id).all()] # Gets ID of matching product tags
         tags = [r[0] for r in Tag.query.with_entities(Tag.tag_name).filter(Tag.id.in_(tag_ids))]
 
-        allergen_ids = [r[0] for r in ProductTag.query.with_entities(ProductTag.tag_id).filter_by(product_id=self.id).all()] # Gets ID of matching product tags
-        allergens = [r[0] for r in Tag.query.with_entities(Tag.tag_name).filter(Tag.id.in_(allergen_ids))]
+        allergen_ids = [r[0] for r in ProductAllergen.query.with_entities(ProductAllergen.allergen_id).filter_by(product_id=self.id).all()] # Gets ID of matching product tags
+        allergens = [r[0] for r in Allergen.query.with_entities(Allergen.name).filter(Allergen.id.in_(allergen_ids))]
+        materials = {r[0]: {"quantity": r[1], "units": r[2]} for r in Material.query.with_entities(Material.material_name, Material.quantity, Material.units).filter_by(product_id=self.id).all()}
         return {
             'id': self.id,
             'name': self.name,
             'family': Food.query.with_entities(Food.family).filter_by(product_id=self.id).first()[0],
             'tags': tags,
-            'allergens': {},
+            'allergens': allergens,
             'customer': Food.query.with_entities(Food.customer).filter_by(product_id=self.id).first()[0],
-            'billOfMaterials': {}
+            'billOfMaterials': materials
             }
 
 
@@ -82,7 +83,8 @@ class ProductTag(db.Model): # Used for all products
 
 class Material(db.Model): # Used for all products
     __tablename__ = 'materials'
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     material_name = db.Column(db.String(100), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     units = db.Column(db.String(100), nullable=False)

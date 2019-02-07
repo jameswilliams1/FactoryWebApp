@@ -92,7 +92,7 @@ class Material(db.Model): # Used for all products
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     material_name = db.Column(db.String(100), nullable=False)
-    quantity = db.Column(db.Integer, nullable=False)
+    quantity = db.Column(db.Float, nullable=False)
     units = db.Column(db.String(100), nullable=False)
 
 
@@ -128,30 +128,46 @@ class Products(Resource):
                 return 'X-API-KEY not recognised', HTTPStatus.BAD_REQUEST
         except KeyError:
             return 'No X-API-KEY supplied', HTTPStatus.BAD_REQUEST
-        json_data = request.get_json()
-        if json_data is None:
+        json_data = dict(request.get_json(force=True))
+        if not json_data:
             return 'No JSON body supplied', HTTPStatus.BAD_REQUEST
         try:
             product = Product(name=json_data["name"], product_type=api_key)
-            db.session.add(Product)
+            db.session.add(product)
             db.session.flush()
             product_id = product.id
-            materials = json_data["billOfMaterials"]
-            #tags = json_data["tags"]
+            materials = json_data.get("billOfMaterials") # Returns None if no materials provided
+            tags = json_data.get("tags")
             if api_key == 'food':
                 family = json_data["family"]
                 customer = json_data["customer"]
                 food_entry = Food(product_id=product_id, family=family, customer=customer)
                 db.session.add(food_entry)
-                try:
-                    allergens = json_data["allergens"]
-
-                except KeyError: # If no allergens provided skip adding
-                    pass
-                db.session.commit()
+                allergens = json_data.get("allergens")
+                if allergens:
+                    for allergen in allergens:
+                        allergen_data = Allergen(name=allergen)
+                        db.session.add(allergen_data)
+                        db.session.flush()
+                        allergen_id = allergen_data.id
+                        db.session.add(ProductAllergen(allergen_id=allergen_id, product_id=product_id))
             elif api_key == 'textile':
                 colour = json_data["colour"]
                 product_range = json_data["range"]
+                textile_data = Textile(colour=colour, range=product_range)
+                db.session.add(textile_data)
+            if tags:
+                for tag in tags:
+                    tag_data = Tag(tag_name=tag)
+                    db.session.add(tag_data)
+                    db.session.flush()
+                    tag_id = tag_data.id
+                    db.session.add(ProductTag(tag_id=tag_id, product_id=product_id))
+            if materials:
+                for material, data in materials.items():
+                    material_data = Material(product_id=product_id, material_name=material, quantity=data["quantity"], units=data["units"])
+                    db.session.add(material_data)
+            db.session.commit()
 
         except KeyError:
             return 'Invalid JSON body supplied', HTTPStatus.BAD_REQUEST

@@ -5,7 +5,7 @@ from http import HTTPStatus
 from app import app, food_products, textile_products
 
 
-url = "http://localhost:5000/products"
+url = "http://localhost:5000/products/"
 food_headers = {"X-API-KEY": "food"}
 textile_headers = {"X-API-KEY": "textile"}
 

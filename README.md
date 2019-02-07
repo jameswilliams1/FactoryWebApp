@@ -20,7 +20,7 @@ or to run in debug mode:
 python app.py
 ```
 ## Usage
-The database can be viewed by sending a **GET** request with the '**X-API-KEY**' header set to either 'food' or 'textile' to the API endpoint '/products/', which retrieves the corresponding products.
+The database can be viewed by sending a **GET** request with the '**X-API-KEY**' header set to either 'food' or 'textile' to the API endpoint ```'/products/'```, which retrieves the corresponding products.
 Requests with any other/no headers will return a BAD_REQUEST (400) response. Food products can be added by sending a **POST** request with the 'food' headers containing a JSON of the product in the form:  
 ```
 {

@@ -1,4 +1,0 @@
-Tests:
-
-- No X-API header
-- 

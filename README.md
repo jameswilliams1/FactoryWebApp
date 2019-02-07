@@ -73,5 +73,4 @@ And textile products are added in a similar way using the 'textile' headers:
     ...
   }
 }
-```  
-Where all "quantity" fields must be integers.  
+```

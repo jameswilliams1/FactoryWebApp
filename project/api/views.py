@@ -58,7 +58,7 @@ class Products(Resource):
             elif api_key == 'textile':
                 colour = json_data["colour"]
                 product_range = json_data["range"]
-                textile_data = Textile(colour=colour, range=product_range)
+                textile_data = Textile(product_id=product_id, colour=colour, range=product_range)
                 db.session.add(textile_data)
             if tags:
                 for tag in tags:

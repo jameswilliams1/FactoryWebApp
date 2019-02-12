@@ -17,7 +17,7 @@ The API can be run by doing:
 > set FLASK_APP=app.py
 > flask run
 ```
-or to run in debug mode:
+or:
 ```
 > python app.py
 ```

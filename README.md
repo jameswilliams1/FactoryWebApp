@@ -1,23 +1,25 @@
 # Factory Web App
 
 ## Installation
-Create a [virtualenvironment](https://virtualenv.pypa.io/en/latest/) using Python 3 for the app. We recommend using
-[virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/):
-```bash
-mkvirtualenv flask-skeleton
+Instructions are given for the Windows command line and may differ slightly for mac/linux. Create a [virtualenvironment](https://virtualenv.pypa.io/en/latest/) using Python 3 for the app:
+```
+> virtualenv venv
 ```
 Then install the dependencies:
-```bash
-pip install -r requirements.txt
 ```
+> pip install -r requirements.txt
+```
+If the virtual environment is installed in the application root in a folder named ```venv```, the helper script can be used to activate it by doing:
+```> venv```
 ## Running
-The Flask app can be run by doing:
-```bash
-FLASK_APP=app.py flask run
+The API can be run by doing:
+```
+> set FLASK_APP=app.py
+> flask run
 ```
 or to run in debug mode:
-```bash
-python app.py
+```
+> python app.py
 ```
 ## Usage
 The database can be viewed by sending a **GET** request with the '**X-API-KEY**' header set to either 'food' or 'textile' to the API endpoint ```'/products/'```, which retrieves the corresponding products.
@@ -74,3 +76,12 @@ And textile products are added in a similar way using the 'textile' headers:
   }
 }
 ```
+## Testing
+If the virtual environment is installed in a folder named ```venv``` in the application root, run the tests by doing:
+```> test```
+to use the helper script, or otherwise by doing:
+```
+> cd project/tests
+> pytest -vv test_api.py
+```
+Running tests from outside the test folder will fail due to file (sample data) not found.

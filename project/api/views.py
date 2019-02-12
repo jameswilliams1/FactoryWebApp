@@ -1,4 +1,3 @@
-import markdown
 import json
 from flask_restful import Resource, Api
 from project.models import Allergen, Food, Material, Product, ProductAllergen, ProductTag, Tag, Textile

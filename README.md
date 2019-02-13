@@ -76,6 +76,7 @@ And textile products are added in a similar way using the 'textile' headers:
   }
 }
 ```
+Any errors in any part of the data will cause the full DB session to rollback.
 ## Testing
 If the virtual environment is installed in a folder named ```venv``` in the application root, run the tests by doing:
 ```> test```
@@ -85,3 +86,7 @@ to use the helper script, or otherwise by doing:
 > pytest -vv test_api.py
 ```
 Running tests from outside the test folder will fail due to file (sample data) not found.
+## Limitations
+Due to time constraints, the following features were not implemented:
+- Ability to update/delete products or add more tags/materials later
+- A production web server is not used (currently the app runs on Werkzeug for testing only)

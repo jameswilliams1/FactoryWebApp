@@ -61,10 +61,14 @@ class Products(Resource):
                 db.session.add(textile_data)
             if tags:
                 for tag in tags:
-                    tag_data = Tag(tag_name=tag)
-                    db.session.add(tag_data)
-                    db.session.flush()
-                    tag_id = tag_data.id
+                    tag_id = Tag.query.with_entities(Tag.id).filter_by(tag_name=tag).first() # Check if tag already exists, create new if not
+                    if not tag_id:
+                        tag_data = Tag(tag_name=tag)
+                        db.session.add(tag_data)
+                        db.session.flush()
+                        tag_id = tag_data.id
+                    else:
+                        tag_id = tag_id[0]
                     db.session.add(ProductTag(tag_id=tag_id, product_id=product_id))
             if materials:
                 for material, data in materials.items():
@@ -72,7 +76,12 @@ class Products(Resource):
                     db.session.add(material_data)
             db.session.commit()
         except KeyError:
+            db.session.rollback()
             return 'Invalid JSON body supplied', HTTPStatus.BAD_REQUEST
+        except:
+            db.session.rollback()
+            raise
+
         return 'Product created', HTTPStatus.CREATED
 
 
